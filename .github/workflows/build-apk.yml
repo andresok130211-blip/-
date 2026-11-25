@@ -1,6 +1,8 @@
-name: Build Unity APK
+name: Build Android APK
 
 on:
+  push:
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
@@ -10,14 +12,16 @@ jobs:
     steps:
       - name: Скачать код проекта
         uses: actions/checkout@v4
+        with:
+          lfs: true
 
       - name: Кэшировать папку Library
         uses: actions/cache@v4
         with:
-          path: Городской Бегун/Library
-          key: Library-Android-${{ hashFiles('Городской Бегун/Assets/**', 'Городской Бегун/Packages/**', 'Городской Бегун/ProjectSettings/**') }}
+          path: CityRunner/Library
+          key: Library-CityRunner-${{ hashFiles('CityRunner/Assets/**', 'CityRunner/Packages/**', 'CityRunner/ProjectSettings/**') }}
           restore-keys: |
-            Library-Android-
+            Library-CityRunner-
 
       - name: Собрать Android APK
         uses: game-ci/unity-builder@v4
@@ -26,7 +30,7 @@ jobs:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
-          projectPath: Городской Бегун
+          projectPath: CityRunner
           targetPlatform: Android
           androidExportType: androidPackage
 
@@ -35,3 +39,4 @@ jobs:
         with:
           name: Build-Android
           path: build/Android
+
