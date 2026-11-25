@@ -1,0 +1,37 @@
+name: Build Unity APK
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build for Android
+    runs-on: ubuntu-latest
+    steps:
+      - name: Скачать код проекта
+        uses: actions/checkout@v4
+
+      - name: Кэшировать папку Library
+        uses: actions/cache@v4
+        with:
+          path: Городской Бегун/Library
+          key: Library-Android-${{ hashFiles('Городской Бегун/Assets/**', 'Городской Бегун/Packages/**', 'Городской Бегун/ProjectSettings/**') }}
+          restore-keys: |
+            Library-Android-
+
+      - name: Собрать Android APK
+        uses: game-ci/unity-builder@v4
+        env:
+          UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+        with:
+          projectPath: Городской Бегун
+          targetPlatform: Android
+          androidExportType: androidPackage
+
+      - name: Загрузить готовый APK
+        uses: actions/upload-artifact@v4
+        with:
+          name: Build-Android
+          path: build/Android
